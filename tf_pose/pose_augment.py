@@ -126,10 +126,10 @@ def pose_crop_random(meta):
         x = random.randrange(0, meta.width - target_size[0]) if meta.width > target_size[0] else 0
         y = random.randrange(0, meta.height - target_size[1]) if meta.height > target_size[1] else 0
 
-        # check whether any face is inside the box to generate a reasonably-balanced datasets
-        for joint in meta.joint_list:
-            if x <= joint[CocoPart.Nose.value][0] < x + target_size[0] and y <= joint[CocoPart.Nose.value][1] < y + target_size[1]:
-                break
+#         # check whether any face is inside the box to generate a reasonably-balanced datasets
+#         for joint in meta.joint_list:
+#             if x <= joint[CocoPart.Nose.value][0] < x + target_size[0] and y <= joint[CocoPart.Nose.value][1] < y + target_size[1]:
+#                 break
 
     return pose_crop(meta, x, y, target_size[0], target_size[1])
 
