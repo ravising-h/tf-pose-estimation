@@ -9,28 +9,45 @@ regularizer_dsconv = 0.0004
 batchnorm_fused = True
 activation_fn = tf.nn.relu
 
-
 class CocoPart(Enum):
-    Nose = 0
-    Neck = 1
-    RShoulder = 2
-    RElbow = 3
-    RWrist = 4
-    LShoulder = 5
-    LElbow = 6
-    LWrist = 7
-    RHip = 8
-    RKnee = 9
-    RAnkle = 10
-    LHip = 11
-    LKnee = 12
-    LAnkle = 13
-    REye = 14
-    LEye = 15
-    REar = 16
-    LEar = 17
-    Background = 18
-
+    SFBM2 = 0
+    FG3 = 1
+    BG2 = 2
+    DC1 = 3
+    FD4 = 4
+    BD1 = 5
+    HD1 = 6
+    BG3 = 7
+    FG1 = 8
+    QP2 = 9
+    FG2 = 10
+    BG1 = 11
+    RBM3 = 12
+    RBM4 = 13
+    BD2 = 14
+    FBM1 = 15
+    BG4 = 16
+    FN2 = 17
+    FBM4 = 18
+    BD3 = 19
+    FBM3 = 20
+    QP1 = 21
+    FBM2 = 22
+    FG4 = 23
+    DG2 = 24
+    RBM1 = 25
+    DG1 = 26
+    FD3 = 27
+    DC2 = 28
+    FD1 = 29
+    SFBM1 = 30
+    FN1 = 31
+    HD2 = 32
+    RBM2 = 33
+    SRBM2 = 34
+    SRBM1 = 35
+    FD2 = 36
+    Background = 37
 
 class MPIIPart(Enum):
     RAnkle = 0
@@ -107,7 +124,10 @@ CocoPairsRender = CocoPairs[:-2]
 
 CocoColors = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0], [85, 255, 0], [0, 255, 0],
               [0, 255, 85], [0, 255, 170], [0, 255, 255], [0, 170, 255], [0, 85, 255], [0, 0, 255], [85, 0, 255],
-              [170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85]]
+              [170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85], [155, 155, 90], [255, 0, 0], 
+              [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0], [85, 255, 0], [0, 255, 0],
+              [0, 255, 85], [0, 255, 170], [0, 255, 255], [0, 170, 255], [0, 85, 255], [0, 0, 255], 
+              [85, 0, 255],[170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85], [155, 155, 90]]
 
 
 def read_imgfile(path, width=None, height=None):
