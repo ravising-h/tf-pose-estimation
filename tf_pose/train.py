@@ -1,6 +1,10 @@
 import matplotlib as mpl
 mpl.use('Agg')      # training mode, no screen should be open. (It will block training loop)
+import os
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import warnings
+warnings.filterwarnings("ignore")
 import argparse
 import logging
 import os
@@ -24,14 +28,16 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+import wandb
+wandb.init(project="tfpose", sync_tensorboard=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
-    parser.add_argument('--model', default='mobilenet_fast', help='model name')
-    parser.add_argument('--datapath', type=str, default='/content/drive/My Drive/Keypoints')
+    parser.add_argument('--model', default='mobilenet_thin', help='model name')
+    parser.add_argument('--datapath', type=str, default='/content/drive/My Drive/Keypoints/annotations/')
     parser.add_argument('--imgpath', type=str, default='/content/drive/My Drive/Keypoints/images/')
-    parser.add_argument('--batchsize', type=int, default=64)
+    parser.add_argument('--batchsize', type=int, default=8)
     parser.add_argument('--gpus', type=int, default=1)
     parser.add_argument('--max-epoch', type=int, default=600)
     parser.add_argument('--lr', type=str, default='0.001')
@@ -52,8 +58,8 @@ if __name__ == '__main__':
     set_network_input_wh(args.input_width, args.input_height)
     scale = 4
 
-    if args.model in ['cmu', 'vgg'] or 'mobilenet' in args.model:
-        scale = 8
+    # if args.model in ['cmu', 'vgg'] or 'mobilenet' in args.model:
+    #     scale = 8
 
     set_network_scale(scale)
     output_w, output_h = args.input_width // scale, args.input_height // scale
@@ -288,4 +294,6 @@ if __name__ == '__main__':
                     last_log_epoch2 = curr_epoch
 
         saver.save(sess, os.path.join(modelpath, args.tag, 'model'), global_step=global_step)
+        saver.save(sess, os.path.join(wandb.run.dir, args.tag, 'model'), global_step=global_step)
+
     logger.info('optimization finished. %f' % (time.time() - time_started))
