@@ -48,8 +48,8 @@ class CocoMetadata:
     # __coco_parts = 57
     __coco_parts = 38
     __coco_vecs = list(zip(
-        [range(38)],
-        [range(38)]
+        [i for i in range(38)],
+        [i for i in range(38)]
     ))
 
     @staticmethod
@@ -85,8 +85,8 @@ class CocoMetadata:
 
         self.joint_list = []
         transform = list(zip(
-            [range(37)],
-            [range(37)]
+            [i for i in range(37)],
+            [i for i in range(37)]
         ))
         for prev_joint in joint_list:
             new_joint = []
@@ -300,9 +300,9 @@ class CocoPose(RNGDataFlow):
             ann_idx = self.coco.getAnnIds(imgIds=img_idx)
 
             if 'http://' in self.img_path:
-                img_url = self.img_path + img_meta['file_name']
+                img_url = self.img_path + img_meta['filename']
             else:
-                img_url = os.path.join(self.img_path, img_meta['file_name'])
+                img_url = os.path.join(self.img_path, img_meta['filename'])
 
             anns = self.coco.loadAnns(ann_idx)
             meta = CocoMetadata(idx, img_url, img_meta, anns, sigma=8.0)
