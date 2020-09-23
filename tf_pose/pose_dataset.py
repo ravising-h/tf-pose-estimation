@@ -46,10 +46,10 @@ mplset = False
 
 class CocoMetadata:
     # __coco_parts = 57
-    __coco_parts = 19
+    __coco_parts = 38
     __coco_vecs = list(zip(
-        [2, 9,  10, 2,  12, 13, 2, 3, 4, 3,  2, 6, 7, 6,  2, 1,  1,  15, 16],
-        [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
+        [range(38)],
+        [range(38)]
     ))
 
     @staticmethod
@@ -85,8 +85,8 @@ class CocoMetadata:
 
         self.joint_list = []
         transform = list(zip(
-            [1, 6, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4],
-            [1, 7, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4]
+            [range(37)],
+            [range(37)]
         ))
         for prev_joint in joint_list:
             new_joint = []
@@ -359,7 +359,7 @@ def get_dataflow(path, is_train, img_path=None):
         ds = MapData(ds, read_image_url)
         ds = MapDataComponent(ds, pose_random_scale)
         ds = MapDataComponent(ds, pose_rotation)
-        ds = MapDataComponent(ds, pose_flip)
+#         ds = MapDataComponent(ds, pose_flip)
         ds = MapDataComponent(ds, pose_resize_shortestedge_random)
         ds = MapDataComponent(ds, pose_crop_random)
         ds = MapData(ds, pose_to_img)
@@ -371,11 +371,11 @@ def get_dataflow(path, is_train, img_path=None):
         # ds = AugmentImageComponent(ds, augs)
         ds = PrefetchData(ds, 1000, multiprocessing.cpu_count() * 1)
     else:
-        ds = MultiThreadMapData(ds, nr_thread=16, map_func=read_image_url, buffer_size=1000)
+        ds = MultiThreadMapData(ds, num_thread=16, map_func=read_image_url, buffer_size=1000)
         ds = MapDataComponent(ds, pose_resize_shortestedge_fixed)
         ds = MapDataComponent(ds, pose_crop_center)
         ds = MapData(ds, pose_to_img)
-        ds = PrefetchData(ds, 100, multiprocessing.cpu_count() // 4)
+        ds = PrefetchData(ds, 100, multiprocessing.cpu_count())
 
     return ds
 
