@@ -28,11 +28,11 @@ logger.addHandler(ch)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
-    parser.add_argument('--model', default='mobilenet_v2_1.4', help='model name')
-    parser.add_argument('--datapath', type=str, default='/data/public/rw/coco/annotations')
-    parser.add_argument('--imgpath', type=str, default='/data/public/rw/coco/')
+    parser.add_argument('--model', default='mobilenet_fast', help='model name')
+    parser.add_argument('--datapath', type=str, default='/content/drive/My Drive/Keypoints')
+    parser.add_argument('--imgpath', type=str, default='/content/drive/My Drive/Keypoints/images/')
     parser.add_argument('--batchsize', type=int, default=64)
-    parser.add_argument('--gpus', type=int, default=4)
+    parser.add_argument('--gpus', type=int, default=1)
     parser.add_argument('--max-epoch', type=int, default=600)
     parser.add_argument('--lr', type=str, default='0.001')
     parser.add_argument('--tag', type=str, default='test')
@@ -61,8 +61,8 @@ if __name__ == '__main__':
     logger.info('define model+')
     with tf.device(tf.DeviceSpec(device_type="CPU")):
         input_node = tf.placeholder(tf.float32, shape=(args.batchsize, args.input_height, args.input_width, 3), name='image')
-        vectmap_node = tf.placeholder(tf.float32, shape=(args.batchsize, output_h, output_w, 38), name='vectmap')
-        heatmap_node = tf.placeholder(tf.float32, shape=(args.batchsize, output_h, output_w, 19), name='heatmap')
+        vectmap_node = tf.placeholder(tf.float32, shape=(args.batchsize, output_h, output_w, 2*38), name='vectmap')
+        heatmap_node = tf.placeholder(tf.float32, shape=(args.batchsize, output_h, output_w, 19*2), name='heatmap')
 
         # prepare data
         df = get_dataflow_batch(args.datapath, True, args.batchsize, img_path=args.imgpath)
@@ -122,9 +122,9 @@ if __name__ == '__main__':
         global_step = tf.Variable(0, trainable=False)
         if ',' not in args.lr:
             starter_learning_rate = float(args.lr)
-            # learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
-            #                                            decay_steps=10000, decay_rate=0.33, staircase=True)
-            learning_rate = tf.train.cosine_decay(starter_learning_rate, global_step, args.max_epoch * step_per_epoch, alpha=0.0)
+            learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
+                                                       decay_steps=10000, decay_rate=0.33, staircase=True)
+            # learning_rate = tf.train.cosine_decay(starter_learning_rate, global_step, args.max_epoch * step_per_epoch, alpha=0.0)
         else:
             lrs = [float(x) for x in args.lr.split(',')]
             boundaries = [step_per_epoch * 5 * i for i, _ in range(len(lrs)) if i > 0]
@@ -171,25 +171,25 @@ if __name__ == '__main__':
         logger.info('model weights initialization')
         sess.run(tf.global_variables_initializer())
 
-        if args.checkpoint and os.path.isdir(args.checkpoint):
-            logger.info('Restore from checkpoint...')
-            # loader = tf.train.Saver(net.restorable_variables())
-            # loader.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
-            saver.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
-            logger.info('Restore from checkpoint...Done')
-        elif pretrain_path:
-            logger.info('Restore pretrained weights... %s' % pretrain_path)
-            if '.npy' in pretrain_path:
-                net.load(pretrain_path, sess, False)
-            else:
-                try:
-                    loader = tf.train.Saver(net.restorable_variables(only_backbone=False))
-                    loader.restore(sess, pretrain_path)
-                except:
-                    logger.info('Restore only weights in backbone layers.')
-                    loader = tf.train.Saver(net.restorable_variables())
-                    loader.restore(sess, pretrain_path)
-            logger.info('Restore pretrained weights...Done')
+#         if args.checkpoint and os.path.isdir(args.checkpoint):
+#             logger.info('Restore from checkpoint...')
+#             # loader = tf.train.Saver(net.restorable_variables())
+#             # loader.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
+#             saver.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
+#             logger.info('Restore from checkpoint...Done')
+#         elif pretrain_path:
+#             logger.info('Restore pretrained weights... %s' % pretrain_path)
+#             if '.npy' in pretrain_path:
+#                 net.load(pretrain_path, sess, False)
+#             else:
+#                 try:
+#                     loader = tf.train.Saver(net.restorable_variables(only_backbone=False))
+#                     loader.restore(sess, pretrain_path)
+#                 except:
+#                     logger.info('Restore only weights in backbone layers.')
+#                     loader = tf.train.Saver(net.restorable_variables())
+#                     loader.restore(sess, pretrain_path)
+#             logger.info('Restore pretrained weights...Done')
 
         logger.info('prepare file writer')
         file_writer = tf.summary.FileWriter(os.path.join(logpath, args.tag), sess.graph)
