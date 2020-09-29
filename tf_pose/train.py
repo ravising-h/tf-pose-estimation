@@ -259,39 +259,39 @@ if __name__ == '__main__':
                 logger.info('validation(%d) %s loss=%f, loss_ll=%f, loss_ll_paf=%f, loss_ll_heat=%f' % (total_cnt, args.tag, average_loss / total_cnt, average_loss_ll / total_cnt, average_loss_ll_paf / total_cnt, average_loss_ll_heat / total_cnt))
                 last_gs_num2 = gs_num
 
-                sample_image = [enqueuer.last_dp[0][i] for i in range(4)]
-                outputMat = sess.run(
-                    outputs,
-                    feed_dict={q_inp: np.array((sample_image + val_image) * max(1, (args.batchsize // 16)))}
-                )
-                pafMat, heatMat = outputMat[:, :, :, 19:], outputMat[:, :, :, :19]
+#                 sample_image = [enqueuer.last_dp[0][i] for i in range(4)]
+#                 outputMat = sess.run(
+#                     outputs,
+#                     feed_dict={q_inp: np.array((sample_image + val_image) * max(1, (args.batchsize // 16)))}
+#                 )
+#                 pafMat, heatMat = outputMat[:, :, :, 19:], outputMat[:, :, :, :19]
 
-                sample_results = []
-                for i in range(len(sample_image)):
-                    test_result = CocoPose.display_image(sample_image[i], heatMat[i], pafMat[i], as_numpy=True)
-                    test_result = cv2.resize(test_result, (640, 640))
-                    test_result = test_result.reshape([640, 640, 3]).astype(float)
-                    sample_results.append(test_result)
+#                 sample_results = []
+#                 for i in range(len(sample_image)):
+#                     test_result = CocoPose.display_image(sample_image[i], heatMat[i], pafMat[i], as_numpy=True)
+#                     test_result = cv2.resize(test_result, (640, 640))
+#                     test_result = test_result.reshape([640, 640, 3]).astype(float)
+#                     sample_results.append(test_result)
 
-                test_results = []
-                for i in range(len(val_image)):
-                    test_result = CocoPose.display_image(val_image[i], heatMat[len(sample_image) + i], pafMat[len(sample_image) + i], as_numpy=True)
-                    test_result = cv2.resize(test_result, (640, 640))
-                    test_result = test_result.reshape([640, 640, 3]).astype(float)
-                    test_results.append(test_result)
+#                 test_results = []
+#                 for i in range(len(val_image)):
+#                     test_result = CocoPose.display_image(val_image[i], heatMat[len(sample_image) + i], pafMat[len(sample_image) + i], as_numpy=True)
+#                     test_result = cv2.resize(test_result, (640, 640))
+#                     test_result = test_result.reshape([640, 640, 3]).astype(float)
+#                     test_results.append(test_result)
 
-                # save summary
-                summary = sess.run(merged_validate_op, feed_dict={
-                    valid_loss: average_loss / total_cnt,
-                    valid_loss_ll: average_loss_ll / total_cnt,
-                    valid_loss_ll_paf: average_loss_ll_paf / total_cnt,
-                    valid_loss_ll_heat: average_loss_ll_heat / total_cnt,
-                    sample_valid: test_results,
-                    sample_train: sample_results
-                })
-                if last_log_epoch2 < curr_epoch:
-                    file_writer.add_summary(summary, curr_epoch)
-                    last_log_epoch2 = curr_epoch
+#                 # save summary
+#                 summary = sess.run(merged_validate_op, feed_dict={
+#                     valid_loss: average_loss / total_cnt,
+#                     valid_loss_ll: average_loss_ll / total_cnt,
+#                     valid_loss_ll_paf: average_loss_ll_paf / total_cnt,
+#                     valid_loss_ll_heat: average_loss_ll_heat / total_cnt,
+#                     sample_valid: test_results,
+#                     sample_train: sample_results
+#                 })
+#                 if last_log_epoch2 < curr_epoch:
+#                     file_writer.add_summary(summary, curr_epoch)
+#                     last_log_epoch2 = curr_epoch
 
         saver.save(sess, os.path.join(modelpath, args.tag, 'model'), global_step=global_step)
         saver.save(sess, os.path.join(wandb.run.dir, args.tag, 'model'), global_step=global_step)
