@@ -100,7 +100,7 @@ if __name__ == '__main__':
                 net, pretrain_path, last_layer = get_network(args.model, q_inp_split[gpu_id])
                 if args.checkpoint:
                     pretrain_path = args.checkpoint
-                 heat = net.loss_last()
+                heat = net.loss_last()
                 output_vectmap.append(0)
                 output_heatmap.append(heat)
                 outputs.append(net.get_output())
