@@ -76,7 +76,7 @@ class Mobilenetv2Network(network_base.BaseNetwork):
                  .separable_conv(3, 3, depth2(128), 1, name=prefix + '_L2_2')
                  .separable_conv(3, 3, depth2(128), 1, name=prefix + '_L2_3')
                  .separable_conv(1, 1, depth2(128), 1, name=prefix + '_L2_4')
-                 .separable_conv(1, 1, 38, 1, relu=False, name=prefix + '_L2_5'))
+                 .separable_conv(1, 1, 38, 1, relu=False, name=prefix + '_L2_5')))
 
 
     def loss_l1_l2(self):
@@ -87,7 +87,7 @@ class Mobilenetv2Network(network_base.BaseNetwork):
             if '_L2_5' in layer_name:
                 l2s.append(self.layers[layer_name])
 
-        return l1s, l2s
+        return  l2s
 
     def loss_last(self):
         return self.get_output('MConv_Stage6_L2_5')
